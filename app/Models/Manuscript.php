@@ -20,6 +20,8 @@ class Manuscript extends Model
         'status',
         'editor_notes',
         'reviewed_at',
+        'agreement_file_path',
+        'originality_file_path',
     ];
 
     protected function casts(): array

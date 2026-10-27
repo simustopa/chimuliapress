@@ -208,7 +208,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ManuscriptController::class,
                 'download'
             ])->name('manuscripts.download');
-        });
+
+            Route::get(
+                '/manuscripts/{manuscript}/documents/{type}/download',
+                [ManuscriptController::class, 'downloadDocument']
+            )->name('manuscripts.documents.download');
+                    });
 });
 
 // Pengaturan profil Breeze

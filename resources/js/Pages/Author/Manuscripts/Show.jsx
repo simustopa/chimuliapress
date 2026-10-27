@@ -240,29 +240,83 @@ export default function Show({ manuscript }) {
                         {/* Sidebar */}
                         <div className="space-y-6">
 
-                            {/* File */}
-                            {/* File */}
+                            {/* Dokumen Pengajuan */}
                             <div className="rounded-xl bg-white p-6 shadow-sm">
                                 <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                                    File Naskah
+                                    Dokumen Pengajuan
                                 </h2>
 
-                                <div className="rounded-lg bg-gray-50 p-4">
-                                    <p className="break-all text-sm font-medium text-gray-800">
-                                        📄 {manuscript.original_filename}
+                                {/* File Naskah Utama */}
+                                <div className="mb-4 rounded-lg bg-gray-50 p-4">
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        📄 File Naskah
+                                    </p>
+
+                                    <p className="mt-1 break-all text-sm text-gray-600">
+                                        {manuscript.original_filename || 'Dokumen naskah'}
                                     </p>
 
                                     <a
-                                        href={route(
-                                            'author.manuscripts.download',
-                                            manuscript.id
-                                        )}
-                                        className="mt-4 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+                                        href={route('author.manuscripts.download', manuscript.id)}
+                                        className="mt-3 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
                                     >
                                         Download Naskah
                                     </a>
                                 </div>
+
+                                {/* Surat Perjanjian */}
+                                <div className="mb-4 rounded-lg bg-gray-50 p-4">
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        📄 Surat Perjanjian Penerbitan
+                                    </p>
+
+                                    {manuscript.agreement_file_path ? (
+                                        <a
+                                            href={route(
+                                                'author.manuscripts.documents.download',
+                                                {
+                                                    manuscript: manuscript.id,
+                                                    type: 'agreement',
+                                                }
+                                            )}
+                                            className="mt-3 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+                                        >
+                                            Download Surat Perjanjian
+                                        </a>
+                                    ) : (
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            Surat perjanjian belum tersedia.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Surat Pernyataan Keaslian */}
+                                <div className="rounded-lg bg-gray-50 p-4">
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        📄 Surat Pernyataan Keaslian Naskah
+                                    </p>
+
+                                    {manuscript.originality_file_path ? (
+                                        <a
+                                            href={route(
+                                                'author.manuscripts.documents.download',
+                                                {
+                                                    manuscript: manuscript.id,
+                                                    type: 'originality',
+                                                }
+                                            )}
+                                            className="mt-3 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+                                        >
+                                            Download Surat Keaslian
+                                        </a>
+                                    ) : (
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            Surat pernyataan keaslian belum tersedia.
+                                        </p>
+                                    )}
+                                </div>
                             </div>
+
 
                             {/* Status Pengajuan */}
                             <div className="rounded-xl bg-white p-6 shadow-sm">

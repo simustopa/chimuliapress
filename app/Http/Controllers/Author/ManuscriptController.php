@@ -89,14 +89,16 @@ class ManuscriptController extends Controller
         ]);
     }
 
+
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'contact_phone' => ['required', 'string', 'max:30'],
+
             'service_type' => [
                 'required',
-                \Illuminate\Validation\Rule::in([
+                Rule::in([
                     'book_textbook',
                     'school_book',
                     'reference_book',
@@ -104,13 +106,30 @@ class ManuscriptController extends Controller
                     'haki_certificate',
                 ]),
             ],
+
             'category_id' => [
                 'nullable',
                 'integer',
                 'exists:categories,id',
             ],
+
             'synopsis' => ['required', 'string', 'max:10000'],
+
             'manuscript_file' => [
+                'required',
+                'file',
+                'mimes:pdf,doc,docx',
+                'max:20480',
+            ],
+
+            'agreement_file' => [
+                'required',
+                'file',
+                'mimes:pdf,doc,docx',
+                'max:20480',
+            ],
+
+            'originality_file' => [
                 'required',
                 'file',
                 'mimes:pdf,doc,docx',
@@ -118,18 +137,28 @@ class ManuscriptController extends Controller
             ],
         ]);
 
-    $file = $request->file('manuscript_file');
-    $filePath = $file->store('manuscripts');
+        $manuscriptFile = $request->file('manuscript_file');
+        $agreementFile = $request->file('agreement_file');
+        $originalityFile = $request->file('originality_file');
 
-            Manuscript::create([
+        $manuscriptPath = $manuscriptFile->store('manuscripts');
+        $agreementPath = $agreementFile->store('manuscripts/agreements');
+        $originalityPath = $originalityFile->store('manuscripts/originality');
+
+        Manuscript::create([
             'user_id' => $request->user()->id,
             'title' => $validated['title'],
             'contact_phone' => $validated['contact_phone'],
             'service_type' => $validated['service_type'],
             'category_id' => $validated['category_id'] ?? null,
             'synopsis' => $validated['synopsis'],
-            'file_path' => $filePath,
-            'original_filename' => $file->getClientOriginalName(),
+
+            'file_path' => $manuscriptPath,
+            'original_filename' => $manuscriptFile->getClientOriginalName(),
+
+            'agreement_file_path' => $agreementPath,
+            'originality_file_path' => $originalityPath,
+
             'status' => 'submitted',
         ]);
 
@@ -137,6 +166,7 @@ class ManuscriptController extends Controller
             ->route('author.manuscripts.index')
             ->with('success', 'Pengajuan naskah berhasil dikirim.');
     }
+
 
     public function show(Request $request, Manuscript $manuscript): Response
     {
@@ -210,21 +240,43 @@ class ManuscriptController extends Controller
             ->with('success', 'Revisi naskah berhasil dikirim.');
     }
 
-    public function download(Request $request, Manuscript $manuscript)
-    {
+    public function downloadDocument(
+    Request $request,
+    Manuscript $manuscript,
+    string $type
+    ) {
+        // Pastikan pengajuan milik author yang sedang login.
         abort_unless(
             $manuscript->user_id === $request->user()->id,
             403
         );
 
+        // Tentukan dokumen yang boleh diunduh.
+        $documents = [
+            'agreement' => [
+                'path' => $manuscript->agreement_file_path,
+                'name' => 'Surat-Perjanjian-Penerbitan',
+            ],
+            'originality' => [
+                'path' => $manuscript->originality_file_path,
+                'name' => 'Surat-Pernyataan-Keaslian',
+            ],
+        ];
+
+        abort_unless(isset($documents[$type]), 404);
+
+        $document = $documents[$type];
+
         abort_unless(
-            $manuscript->file_path && Storage::exists($manuscript->file_path),
+            $document['path'] &&
+            Storage::exists($document['path']),
             404
         );
 
         return Storage::download(
-            $manuscript->file_path,
-            $manuscript->original_filename
+            $document['path'],
+            $document['name'] . '.' .
+                pathinfo($document['path'], PATHINFO_EXTENSION)
         );
     }
 }

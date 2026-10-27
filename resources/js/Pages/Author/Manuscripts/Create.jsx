@@ -17,6 +17,8 @@ export default function Create({ categories = [] }) {
         category_id: '',
         synopsis: '',
         manuscript_file: null,
+        agreement_file: null,
+        originality_file: null,
     });
 
     function handleSubmit(event) {
@@ -278,6 +280,82 @@ export default function Create({ categories = [] }) {
                                     </div>
                                 )}
                             </div>
+
+
+                            {/* Dokumen Surat Perjanjian */}
+                            <div>
+                                <label htmlFor="agreement_file" className={labelClass}>
+                                    Surat Perjanjian Penerbitan *
+                                </label>
+
+                                <input
+                                    id="agreement_file"
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={(event) =>
+                                        setData(
+                                            'agreement_file',
+                                            event.target.files?.[0] ?? null
+                                        )
+                                    }
+                                    className="mt-2 block w-full text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                                    required
+                                />
+
+                                <p className="mt-2 text-xs text-gray-500">
+                                    Format PDF, DOC, atau DOCX. Ukuran maksimal 20 MB.
+                                </p>
+
+                                {data.agreement_file && (
+                                    <p className="mt-2 break-all text-sm text-green-700">
+                                        File dipilih: {data.agreement_file.name}
+                                    </p>
+                                )}
+
+                                {errors.agreement_file && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.agreement_file}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Dokumen Surat Pernyataan Keaslian */}
+                            <div>
+                                <label htmlFor="originality_file" className={labelClass}>
+                                    Surat Pernyataan Keaslian Naskah *
+                                </label>
+
+                                <input
+                                    id="originality_file"
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={(event) =>
+                                        setData(
+                                            'originality_file',
+                                            event.target.files?.[0] ?? null
+                                        )
+                                    }
+                                    className="mt-2 block w-full text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                                    required
+                                />
+
+                                <p className="mt-2 text-xs text-gray-500">
+                                    Format PDF, DOC, atau DOCX. Ukuran maksimal 20 MB.
+                                </p>
+
+                                {data.originality_file && (
+                                    <p className="mt-2 break-all text-sm text-green-700">
+                                        File dipilih: {data.originality_file.name}
+                                    </p>
+                                )}
+
+                                {errors.originality_file && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.originality_file}
+                                    </p>
+                                )}
+                            </div>
+
 
                             <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end">
                                 <Link
