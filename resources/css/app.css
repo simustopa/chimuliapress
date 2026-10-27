@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Membuat perpindahan antarbagian halaman menjadi halus */
+html {
+    scroll-behavior: smooth;
+}
