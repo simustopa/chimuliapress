@@ -178,4 +178,38 @@ class ManuscriptController extends Controller
             ->with('success', 'Review naskah berhasil disimpan.');
     }
 
+    public function downloadDocument(
+    Request $request,
+    Manuscript $manuscript,
+    string $type
+    ) {
+        $documents = [
+            'agreement' => [
+                'path' => $manuscript->agreement_file_path,
+                'name' => 'Surat-Perjanjian-Penerbitan',
+            ],
+            'originality' => [
+                'path' => $manuscript->originality_file_path,
+                'name' => 'Surat-Pernyataan-Keaslian',
+            ],
+        ];
+
+        abort_unless(isset($documents[$type]), 404);
+
+        $document = $documents[$type];
+
+        abort_unless(
+            $document['path'] &&
+            Storage::exists($document['path']),
+            404,
+            'Dokumen tidak ditemukan.'
+        );
+
+        return Storage::download(
+            $document['path'],
+            $document['name'] . '.' .
+                pathinfo($document['path'], PATHINFO_EXTENSION)
+        );
+    }
+
 }

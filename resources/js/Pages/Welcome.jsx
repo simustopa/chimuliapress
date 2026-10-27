@@ -118,9 +118,12 @@ export default function Welcome({
             <div className="min-h-screen overflow-x-hidden bg-white font-sans text-slate-800">
                 <header className="sticky top-0 z-50 bg-[#0b3a70] text-white shadow-sm">
                     <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-3 sm:px-8">
-                        <Link href="/" className="flex shrink-0 flex-col leading-none" aria-label="CHIMULIA PRESS beranda">
-                            <span className="font-serif text-2xl font-bold tracking-tight sm:text-3xl">ℭimulia</span>
-                            <span className="mt-1 text-[7px] tracking-[0.12em] text-blue-100">Center for Cultural Impact in Mathematics Learning</span>
+                        <Link
+                            href="/"className="flex shrink-0 items-center"aria-label="CHIMULIA PRESS beranda"
+                        >
+                            <img
+                                src="/images/chimulia-white.png"alt="Logo CHIMULIA"className="h-20 w-auto object-contain"
+                            />
                         </Link>
 
                         <button
@@ -255,10 +258,12 @@ export default function Welcome({
                         <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.2fr_0.9fr] lg:gap-16 lg:py-16">
                             <div className="py-2">
                                 <p className="text-sm font-bold sm:text-base">Penerbit berkualitas dan Resmi</p>
-                                <h1 className="mt-5 font-serif text-6xl font-bold leading-none tracking-tight sm:text-7xl lg:text-8xl">ℭimulia<span className="text-amber-200">✦</span></h1>
-                                <p className="mt-3 text-sm font-semibold tracking-wide sm:text-base">Center for Cultural Impact in Mathematics Learning</p>
-                                <div className="mt-3 flex max-w-md items-center gap-3 text-[10px] tracking-[0.22em] text-blue-100 sm:text-xs">
-                                    <span className="h-px flex-1 bg-blue-200/70" /> Culture • Innovation • Mathematics <span className="h-px flex-1 bg-blue-200/70" />
+                                <div className="mt-5">
+                                    <img
+                                        src="/images/chimulia-white.png"
+                                        alt="CHIMULIA — Center for Cultural Impact in Mathematics Learning"
+                                        className="h-auto w-full max-w-[800px] object-contain object-left"
+                                    />
                                 </div>
                                 <h2 className="mt-8 max-w-lg text-lg font-bold leading-snug sm:text-xl">Layanan Penerbitan<br />Buku Akademik &amp; Referensi Ilmiah</h2>
                                 <p className="mt-4 max-w-2xl text-sm leading-6 text-blue-50 sm:text-[15px] sm:leading-7">

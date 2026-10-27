@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 function statusLabel(status) {
     const labels = {
@@ -41,6 +41,17 @@ export default function Dashboard({
     recentManuscripts = [],
     documentLinks = [],
 }) {
+    const handleDelete = (manuscript) => {
+        const confirmed = window.confirm(
+            `Apakah Anda yakin ingin menghapus pengajuan "${manuscript.title}"? File dokumen yang terkait juga akan dihapus.`
+        );
+
+        if (!confirmed) return;
+
+        router.delete(route('author.manuscripts.destroy', manuscript.id), {
+            preserveScroll: true,
+        });
+    };
     const cards = [
         {
             label: 'Total Pengajuan',
@@ -259,6 +270,9 @@ export default function Dashboard({
                                             <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500">
                                                 Status
                                             </th>
+                                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500">
+                                                Aksi
+                                            </th>
                                         </tr>
                                     </thead>
 
@@ -296,6 +310,22 @@ export default function Dashboard({
                                                             manuscript.status
                                                         )}
                                                     </span>
+                                                </td>
+
+                                                <td className="whitespace-nowrap px-6 py-4">
+                                                    {manuscript.status === 'submitted' ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDelete(manuscript)}
+                                                            className="rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100"
+                                                        >
+                                                            Hapus
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-xs text-gray-400">
+                                                            Tidak tersedia
+                                                        </span>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

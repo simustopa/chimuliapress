@@ -279,4 +279,43 @@ class ManuscriptController extends Controller
                 pathinfo($document['path'], PATHINFO_EXTENSION)
         );
     }
+
+    public function destroy(
+    Request $request,
+    Manuscript $manuscript
+    ): RedirectResponse {
+        // Pastikan pengajuan milik penulis yang sedang login.
+        abort_unless(
+            $manuscript->user_id === $request->user()->id,
+            403
+        );
+
+        // Pengajuan hanya boleh dihapus jika masih menunggu peninjauan.
+        abort_unless(
+            $manuscript->status === 'submitted',
+            403,
+            'Pengajuan hanya dapat dihapus saat menunggu peninjauan.'
+        );
+
+        // Catat semua file yang perlu dihapus.
+        $filePaths = array_filter([
+            $manuscript->file_path,
+            $manuscript->agreement_file_path,
+            $manuscript->originality_file_path,
+        ]);
+
+        // Hapus data pengajuan dari database.
+        $manuscript->delete();
+
+        // Hapus file naskah dan kedua dokumen pendukung.
+        foreach ($filePaths as $path) {
+            if (Storage::exists($path)) {
+                Storage::delete($path);
+            }
+        }
+
+        return redirect()
+            ->route('author.dashboard')
+            ->with('success', 'Pengajuan naskah berhasil dihapus.');
+    }
 }

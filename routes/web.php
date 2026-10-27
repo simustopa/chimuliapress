@@ -164,6 +164,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/manuscripts/{manuscript}/download', [EditorManuscriptController::class, 'download'])
             ->name('manuscripts.download');
 
+            Route::get(
+                '/manuscripts/{manuscript}/documents/{type}/download',
+                [EditorManuscriptController::class, 'downloadDocument']
+            )->name('manuscripts.documents.download');
+
             Route::put('/manuscripts/{manuscript}', [EditorManuscriptController::class, 'update'])
             ->name('manuscripts.update');
         });
@@ -209,11 +214,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'download'
             ])->name('manuscripts.download');
 
+
             Route::get(
                 '/manuscripts/{manuscript}/documents/{type}/download',
                 [ManuscriptController::class, 'downloadDocument']
             )->name('manuscripts.documents.download');
-                    });
+
+            // Hapus pengajuan naskah
+            Route::delete(
+                '/manuscripts/{manuscript}',
+                [ManuscriptController::class, 'destroy']
+            )->name('manuscripts.destroy');
+        });
 });
 
 // Pengaturan profil Breeze
@@ -233,7 +245,5 @@ Route::middleware('auth')->group(function () {
         'destroy',
     ])->name('profile.destroy');
 });
-
-
 
 require __DIR__.'/auth.php';
