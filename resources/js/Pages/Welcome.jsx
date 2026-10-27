@@ -116,7 +116,7 @@ export default function Welcome({
         <>
             <Head title="CHIMULIA PRESS | Penerbit Buku Akademik" />
             <div className="min-h-screen overflow-x-hidden bg-white font-sans text-slate-800">
-                <header className="sticky top-0 z-50 bg-[#0b3a70] text-white shadow-sm">
+                <header className="fixed top-0 left-0 right-0 z-50 bg-[#0b3a70] text-white shadow-sm">
                     <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-3 sm:px-8">
                         <Link
                             href="/"className="flex shrink-0 items-center"aria-label="CHIMULIA PRESS beranda"
@@ -246,7 +246,11 @@ export default function Welcome({
                 </header>
 
                 <main>
-                    <section id="beranda" className="relative isolate overflow-hidden bg-[#0b3a70] text-white">
+                    <section id="beranda"className="relative isolate overflow-hidden bg-cover bg-center text-white"style={{
+                            backgroundImage:
+                                "linear-gradient(rgba(11, 58, 112, 0.72), rgba(11, 58, 112, 0.82)), url('/images/hero-bg.jpg')",
+                        }}
+                    >
                         <div className="pointer-events-none absolute inset-0 opacity-40" aria-hidden="true">
                             <svg className="h-full w-full" viewBox="0 0 1440 600" preserveAspectRatio="none" fill="none">
                                 {Array.from({ length: 13 }, (_, i) => (
