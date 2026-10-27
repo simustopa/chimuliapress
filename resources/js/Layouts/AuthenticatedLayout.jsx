@@ -18,8 +18,12 @@ export default function AuthenticatedLayout({ header, children }) {
                     <div className="flex h-16 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                <Link href="/" className="flex shrink-0 items-center">
+                                    <img
+                                        src="/images/chimulia-color.png"
+                                        alt="Logo CHIMULIA"
+                                        className="h-14 w-auto object-contain"
+                                    />
                                 </Link>
                             </div>
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
