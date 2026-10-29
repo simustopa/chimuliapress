@@ -7,13 +7,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-{
-    Schema::create('document_links', function (Blueprint $table) {
-        $table->id();
-        $table->string('key')->unique();
-        $table->string('title');
-        $table->text('url')->nullable();
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('document_links', function (Blueprint $table) {
+            $table->id();
+            $table->string('key')->unique();
+            $table->string('title');
+            $table->text('url')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('document_links');
+    }
 };

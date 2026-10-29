@@ -179,20 +179,21 @@ export default function Show({ manuscript }) {
     const currentStatus = manuscript.status;
 
     const {
-        data,
-        setData,
-        put,
-        processing,
-        errors,
-        reset,
+    data,
+    setData,
+    post,
+    processing,
+    errors,
+    reset,
     } = useForm({
         manuscript_file: null,
+        _method: 'put',
     });
 
     const submitRevision = (event) => {
         event.preventDefault();
 
-        put(route('author.manuscripts.revision', manuscript.id), {
+        post(route('author.manuscripts.revision', manuscript.id), {
             forceFormData: true,
             onSuccess: () => reset(),
         });
