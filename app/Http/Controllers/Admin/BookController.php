@@ -120,6 +120,7 @@ class BookController extends Controller
     }
 
 
+
     public function update(Request $request, Book $book): RedirectResponse
     {
         $validated = $request->validate([
@@ -133,8 +134,12 @@ class BookController extends Controller
             'description' => ['nullable', 'string'],
             'status' => ['required', Rule::in(['draft', 'published'])],
             'published_at' => ['nullable', 'date'],
-            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-
+            'cover_image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
             'author_name' => ['nullable', 'string', 'max:255'],
             'category_name' => [
                 'required',
@@ -145,57 +150,57 @@ class BookController extends Controller
                     'Buku Umum dan Literasi Edukasi',
                 ]),
             ],
-
             'price' => ['nullable', 'integer', 'min:0'],
             'sold_count' => ['required', 'integer', 'min:0'],
-            'availability_status' => ['required', Rule::in(['ready', 'preorder'])],
+            'availability_status' => [
+                'required',
+                Rule::in(['ready', 'preorder']),
+            ],
             'is_best_seller' => ['required', 'boolean'],
         ]);
 
         $authorName = trim($validated['author_name'] ?? '');
         $categoryName = $validated['category_name'];
 
-        unset($validated['author_name'], $validated['category_name']);
-        unset($validated['cover_image']);
+        unset(
+            $validated['author_name'],
+            $validated['category_name'],
+            $validated['cover_image']
+        );
 
         $validated['slug'] = Str::slug($validated['title']);
 
-        // Keluarkan cover_image dari data update terlebih dahulu.
-        // Dengan begitu, sampul lama tidak tertimpa null atau string kosong.
-        unset($validated['cover_image']);
-
-        // Ganti sampul hanya jika pengguna mengunggah file baru.
+        // Ganti sampul hanya jika ada file baru yang diunggah.
         if ($request->hasFile('cover_image')) {
             $newCover = $request->file('cover_image')
                 ->store('covers', 'public');
 
-            if ($newCover) {
-                $oldCover = $book->cover_image;
-
-                $validated['cover_image'] = $newCover;
-
-                // Update data buku dengan sampul baru.
-                $book->update($validated);
-
-                // Hapus sampul lama setelah data berhasil diperbarui.
-                if (
-                    $oldCover &&
-                    Storage::disk('public')->exists($oldCover)
-                ) {
-                    Storage::disk('public')->delete($oldCover);
-                }
-            } else {
-                $book->update($validated);
+            if (!$newCover) {
+                return back()
+                    ->withErrors([
+                        'cover_image' => 'Sampul buku gagal diunggah. Silakan coba kembali.',
+                    ])
+                    ->withInput();
             }
-        } else {
-            // Tidak ada file baru: sampul lama tetap dipertahankan.
-            $book->update($validated);
+
+            $validated['cover_image'] = $newCover;
         }
 
+        $oldCover = $book->cover_image;
 
+        // Perbarui data buku satu kali.
         $book->update($validated);
 
-        // Ganti relasi penulis sesuai input terbaru.
+        // Hapus sampul lama hanya setelah buku berhasil diperbarui.
+        if (
+            isset($validated['cover_image']) &&
+            $oldCover &&
+            Storage::disk('public')->exists($oldCover)
+        ) {
+            Storage::disk('public')->delete($oldCover);
+        }
+
+        // Perbarui relasi penulis.
         if ($authorName === '') {
             $book->authors()->sync([]);
         } else {
@@ -207,7 +212,7 @@ class BookController extends Controller
             $book->authors()->sync([$author->id]);
         }
 
-        // Ganti kategori buku.
+        // Perbarui relasi kategori.
         $category = Category::firstOrCreate(
             ['slug' => Str::slug($categoryName)],
             ['name' => $categoryName, 'is_active' => true]
@@ -219,6 +224,7 @@ class BookController extends Controller
             ->route('admin.books.index')
             ->with('success', 'Buku berhasil diperbarui.');
     }
+
 
     public function destroy(Book $book): RedirectResponse
     {
