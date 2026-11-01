@@ -82,6 +82,7 @@ class DocumentationController extends Controller
     /**
      * Memperbarui dokumentasi.
      */
+
     public function update(
         Request $request,
         Documentation $documentation
@@ -91,27 +92,34 @@ class DocumentationController extends Controller
             'description' => ['nullable', 'string'],
             'type' => ['required', Rule::in(['photo', 'video'])],
             'file' => [
-                        'nullable',
-                        'file',
-                        'max:51200',
-                        Rule::when(
-                            $request->input('type') === 'photo',
-                            ['image', 'mimes:jpg,jpeg,png,webp'],
-                            ['mimetypes:video/mp4,video/webm,video/ogg']
-                        ),
-                    ],
+                Rule::requiredIf(
+                    $request->input('type') !== $documentation->type
+                ),
+                'nullable',
+                'file',
+                'max:51200',
+                Rule::when(
+                    $request->input('type') === 'photo',
+                    ['image', 'mimes:jpg,jpeg,png,webp'],
+                    ['mimetypes:video/mp4,video/webm,video/ogg']
+                ),
+            ],
             'is_active' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0'],
         ]);
+
+        $oldPath = $documentation->file_path;
 
         if ($request->hasFile('file')) {
             $newPath = $request->file('file')
                 ->store('documentations', 'public');
 
-            if ($documentation->file_path) {
-                Storage::disk('public')->delete(
-                    $documentation->file_path
-                );
+            if (!$newPath) {
+                return back()
+                    ->withErrors([
+                        'file' => 'File gagal diunggah. Silakan coba kembali.',
+                    ])
+                    ->withInput();
             }
 
             $validated['file_path'] = $newPath;
@@ -121,28 +129,35 @@ class DocumentationController extends Controller
 
         $documentation->update($validated);
 
+        // Hapus file lama setelah data berhasil diperbarui.
+        if (
+            isset($validated['file_path']) &&
+            $oldPath &&
+            $oldPath !== $validated['file_path']
+        ) {
+            Storage::disk('public')->delete($oldPath);
+        }
+
         return redirect()
             ->route('admin.documentations.index')
             ->with('success', 'Dokumentasi berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus dokumentasi.
-     */
     public function destroy(
         Documentation $documentation
     ): RedirectResponse {
-        if ($documentation->file_path) {
-            Storage::disk('public')->delete(
-                $documentation->file_path
-            );
-        }
+        $filePath = $documentation->file_path;
 
         $documentation->delete();
+
+        if ($filePath) {
+            Storage::disk('public')->delete($filePath);
+        }
 
         return redirect()
             ->route('admin.documentations.index')
             ->with('success', 'Dokumentasi berhasil dihapus.');
     }
+
 }
 
