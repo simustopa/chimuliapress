@@ -11,6 +11,7 @@ use Inertia\Response;
 
 class ManuscriptController extends Controller
 {
+
     public function index(Request $request): Response
     {
         $query = Manuscript::query()
@@ -20,7 +21,6 @@ class ManuscriptController extends Controller
             ])
             ->latest();
 
-        // Pencarian berdasarkan judul atau author
         if ($request->filled('search')) {
             $search = $request->input('search');
 
@@ -34,7 +34,6 @@ class ManuscriptController extends Controller
             });
         }
 
-        // Filter status
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
@@ -43,14 +42,26 @@ class ManuscriptController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        $stats = [
+            'total' => Manuscript::count(),
+            'submitted' => Manuscript::where('status', 'submitted')->count(),
+            'under_review' => Manuscript::where('status', 'under_review')->count(),
+            'revision' => Manuscript::where('status', 'revision')->count(),
+            'accepted' => Manuscript::where('status', 'accepted')->count(),
+            'rejected' => Manuscript::where('status', 'rejected')->count(),
+            'published' => Manuscript::where('status', 'published')->count(),
+        ];
+
         return Inertia::render('Admin/Manuscripts/Index', [
             'manuscripts' => $manuscripts,
             'filters' => [
                 'search' => $request->input('search', ''),
                 'status' => $request->input('status', ''),
             ],
+            'stats' => $stats,
         ]);
     }
+
 
     public function show(Manuscript $manuscript): Response
     {
