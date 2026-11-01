@@ -7,9 +7,9 @@ use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -17,6 +17,7 @@ class CategoryController extends Controller
     {
         return Inertia::render('Admin/Categories/Index', [
             'categories' => Category::query()
+                ->withCount(['books', 'manuscripts'])
                 ->orderBy('name')
                 ->get(),
         ]);
@@ -30,7 +31,12 @@ class CategoryController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:categories,name'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:categories,name',
+            ],
             'description' => ['nullable', 'string'],
             'is_active' => ['required', 'boolean'],
         ]);
@@ -51,14 +57,17 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function update(Request $request, Category $category): RedirectResponse
-    {
+    public function update(
+        Request $request,
+        Category $category
+    ): RedirectResponse {
         $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('categories', 'name')->ignore($category->id),
+                Rule::unique('categories', 'name')
+                    ->ignore($category->id),
             ],
             'description' => ['nullable', 'string'],
             'is_active' => ['required', 'boolean'],
@@ -75,6 +84,20 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): RedirectResponse
     {
+        $category->loadCount(['books', 'manuscripts']);
+
+        if (
+            $category->books_count > 0 ||
+            $category->manuscripts_count > 0
+        ) {
+            return redirect()
+                ->route('admin.categories.index')
+                ->with(
+                    'error',
+                    'Kategori tidak dapat dihapus karena masih digunakan oleh buku atau naskah.'
+                );
+        }
+
         $category->delete();
 
         return redirect()
