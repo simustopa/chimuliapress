@@ -19,6 +19,8 @@ class Book extends Model
         'sold_count',
         'availability_status',
         'is_best_seller',
+        'purchase_url',
+        'is_external_publication',
     ];
 
     protected function casts(): array

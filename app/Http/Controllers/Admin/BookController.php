@@ -65,6 +65,8 @@ class BookController extends Controller
             'sold_count' => ['required', 'integer', 'min:0'],
             'availability_status' => ['required', Rule::in(['ready', 'preorder'])],
             'is_best_seller' => ['required', 'boolean'],
+            'is_external_publication' => ['required', 'boolean'],
+            'purchase_url' => ['nullable', 'url', 'max:2048'],
         ]);
 
         $authorName = trim($validated['author_name'] ?? '');
@@ -157,6 +159,8 @@ class BookController extends Controller
                 Rule::in(['ready', 'preorder']),
             ],
             'is_best_seller' => ['required', 'boolean'],
+            'is_external_publication' => ['required', 'boolean'],
+            'purchase_url' => ['nullable', 'url', 'max:2048'],
         ]);
 
         $authorName = trim($validated['author_name'] ?? '');

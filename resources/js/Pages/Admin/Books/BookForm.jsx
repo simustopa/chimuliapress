@@ -19,6 +19,8 @@ export default function BookForm({ auth, book = null, categories = [] }) {
         sold_count: book?.sold_count ?? 0,
         availability_status: book?.availability_status ?? 'ready',
         is_best_seller: Boolean(book?.is_best_seller),
+        is_external_publication: Boolean(book?.is_external_publication),
+        purchase_url: book?.purchase_url ?? '',
     });
 
     function submit(e) {
@@ -294,12 +296,35 @@ export default function BookForm({ auth, book = null, categories = [] }) {
                                         </span>
                                     </label>
                                 </div>
+
+                                <div className="flex items-center">
+                                    <label className="flex w-full cursor-pointer items-start gap-3 rounded-xl border border-blue-200 bg-blue-50/60 p-4 transition hover:bg-blue-50">
+                                        <input
+                                            type="checkbox"
+                                            checked={data.is_external_publication}
+                                            onChange={(e) =>
+                                                setData('is_external_publication', e.target.checked)
+                                            }
+                                            className="mt-1 h-4 w-4 rounded border-blue-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span>
+                                            <span className="block text-sm font-semibold text-slate-800">
+                                                Terbitan Luar
+                                            </span>
+                                            <span className="mt-1 block text-xs leading-5 text-slate-500">
+                                                Tandai jika buku ini merupakan terbitan dari penerbit lain.
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
                                 <div className="sm:col-span-2">
                                     <FieldError field="is_best_seller" />
+                                    <FieldError field="is_external_publication" />
                                 </div>
                                 <div className="sm:col-span-2">
                                     <FieldError field="sold_count" />
                                 </div>
+
                             </div>
                         </section>
 
@@ -346,6 +371,38 @@ export default function BookForm({ auth, book = null, categories = [] }) {
                                     </p>
                                 )}
                                 <FieldError field="cover_image" />
+                            </div>
+                        </section>
+
+                        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                            <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
+                                <h3 className="font-bold text-slate-900">Link Pembelian Buku</h3>
+                                <p className="mt-1 text-sm text-slate-500">
+                                    Masukkan tautan pembelian khusus untuk buku ini.
+                                </p>
+                            </div>
+
+                            <div className="p-5 sm:p-7">
+                                <label htmlFor="purchase_url" className="text-sm font-semibold text-slate-700">
+                                    URL pembelian
+                                </label>
+
+                                <input
+                                    id="purchase_url"
+                                    type="url"
+                                    value={data.purchase_url}
+                                    onChange={(e) => setData('purchase_url', e.target.value)}
+                                    className={inputClass('purchase_url')}
+                                    placeholder="https://forms.gle/contoh-link-pembelian"
+                                    maxLength={2048}
+                                />
+
+                                <p className="mt-2 text-xs leading-5 text-slate-400">
+                                    Tautan ini akan digunakan pada tombol Pesan Buku di halaman publik.
+                                    Kosongkan jika buku belum tersedia untuk dipesan.
+                                </p>
+
+                                <FieldError field="purchase_url" />
                             </div>
                         </section>
 

@@ -546,30 +546,46 @@ export default function Index({ books, categories = [], filters = {} }) {
                                             </p>
                                         </div>
 
-                                        <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
-                                            <Link
-                                                href={route('public.books.show', book.slug)}
-                                                className="flex items-center justify-center rounded-lg bg-[#0b3a70] px-2 py-3 text-center text-sm font-semibold text-white transition hover:bg-blue-900"
-                                            >
-                                                Detail Buku
-                                            </Link>
-                                            <button
-                                                type="button"
-                                                onClick={() => shareWhatsApp(book)}
-                                                className="flex items-center justify-center gap-1 rounded-lg border border-emerald-600 px-2 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
-                                                    fill="currentColor"
-                                                    className="h-4 w-4 shrink-0"
-                                                    aria-hidden="true"
+
+                                        <div className="mt-auto space-y-2 pt-4">
+                                            {book.purchase_url && (
+                                                <a
+                                                    href={book.purchase_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex w-full items-center justify-center rounded-lg bg-amber-400 px-3 py-3 text-center text-sm font-bold text-[#0b3a70] transition hover:bg-amber-300"
                                                 >
-                                                    <path d="M12.04 2a9.91 9.91 0 0 0-8.46 15.08L2.5 22l5.08-1.33A10 10 0 1 0 12.04 2Zm0 18.18a8.17 8.17 0 0 1-4.17-1.14l-.3-.18-3.02.79.81-2.94-.2-.31a8.16 8.16 0 1 1 6.88 3.78Zm4.48-6.12c-.24-.12-1.43-.71-1.65-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.21-1.43-1.35-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.46-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.09 3.62.57.25 1.01.4 1.36.51.57.18 1.09.15 1.5.09.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z" />
-                                                </svg>
-                                                Bagikan
-                                            </button>
+                                                    Pesan Buku
+                                                </a>
+                                            )}
+
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <Link
+                                                    href={route('public.books.show', book.slug)}
+                                                    className="flex items-center justify-center rounded-lg bg-[#0b3a70] px-2 py-3 text-center text-sm font-semibold text-white transition hover:bg-blue-900"
+                                                >
+                                                    Detail Buku
+                                                </Link>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => shareWhatsApp(book)}
+                                                    className="flex items-center justify-center gap-1 rounded-lg border border-emerald-600 px-2 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        fill="currentColor"
+                                                        className="h-4 w-4 shrink-0"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path d="M12.04 2a9.91 9.91 0 0 0-8.46 15.08L2.5 22l5.08-1.33A10 10 0 1 0 12.04 2Zm0 18.18a8.17 8.17 0 0 1-4.17-1.14l-.3-.18-3.02.79.81-2.94-.2-.31a8.16 8.16 0 1 1 6.88 3.78Zm4.48-6.12c-.24-.12-1.43-.71-1.65-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.21-1.43-1.35-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.46-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.09 3.62.57.25 1.01.4 1.36.51.57.18 1.09.15 1.5.09.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z" />
+                                                    </svg>
+                                                    Bagikan
+                                                </button>
+                                            </div>
                                         </div>
+
                                     </div>
                                 </article>
                             ))}

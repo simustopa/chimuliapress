@@ -315,21 +315,21 @@ export default function Welcome({
                                         icon: '▤',
                                         title: 'Penerbitan Buku Akademik',
                                         text: 'Menerbitkan buku berkualitas untuk mendukung pengembangan ilmu pengetahuan.',
-                                        color: 'blue',
+
                                     },
                                     {
                                         id: 'isbn',
                                         icon: '✓',
                                         title: 'Pengurusan ISBN & E-ISBN',
                                         text: 'Pengurusan ISBN dan E-ISBN dengan proses mudah dan cepat.',
-                                        color: 'green',
+
                                     },
                                     {
                                         id: 'hki',
                                         icon: '©',
                                         title: 'Hak Cipta & HKI Buku',
                                         text: 'Melindungi karya Anda dengan layanan pendaftaran hak cipta.',
-                                        color: 'amber',
+
                                     },
                                 ].map((service) => (
                                     <article
@@ -379,7 +379,7 @@ export default function Welcome({
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 {/* HEADER POP-UP */}
-                                <div className="flex items-center justify-between bg-blue-600 px-5 py-4 text-white sm:px-6">
+                                <div className="flex items-center justify-between bg-[#06A173] px-5 py-4 text-white sm:px-6">
                                     <div className="flex items-center gap-3">
                                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 text-xl">
                                             {activeService.icon}
@@ -909,27 +909,39 @@ export default function Welcome({
                                             <div className="flex snap-x gap-4 overflow-x-auto pb-3">
                                                 {filteredBooks.map((book) => (
                                                     <article key={book.id} className="flex w-[205px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg sm:w-[220px]">
-                                                        <Link href={route('public.books.show', book.slug)} className="flex h-48 items-center justify-center bg-slate-50 p-3">
+                                                        <div className="relative">
+                                                        <Link
+                                                            href={route('public.books.show', book.slug)}
+                                                            className="flex h-48 items-center justify-center bg-slate-50 p-3"
+                                                        >
                                                             {book.cover_image ? (
-                                                                <img src={`/storage/${book.cover_image}`} alt={`Sampul ${book.title}`} loading="lazy" className="h-full w-full object-contain" />
+                                                                <img
+                                                                    src={`/storage/${book.cover_image}`}
+                                                                    alt={`Sampul ${book.title}`}
+                                                                    loading="lazy"
+                                                                    className="h-full w-full object-contain"
+                                                                />
                                                             ) : (
-                                                                <span className="text-xs text-slate-400">Sampul belum tersedia</span>
+                                                                <span className="text-xs text-slate-400">
+                                                                    Sampul belum tersedia
+                                                                </span>
                                                             )}
                                                         </Link>
-                                                        <div className="flex flex-1 flex-col p-4">
-                                                            <div className="mb-2 flex flex-wrap gap-1">
-                                                                {book.categories?.slice(0, 1).map((category) => (
-                                                                    <span key={category.id} className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700">{category.name}</span>
-                                                                ))}
-                                                            </div>
-                                                            <Link href={route('public.books.show', book.slug)} className="line-clamp-2 min-h-10 text-sm font-extrabold leading-5 text-[#082f5c] hover:text-blue-700">{book.title}</Link>
-                                                            <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500">{getBookDescription(book)}</p>
-                                                            <p className="mt-3 text-sm font-extrabold text-[#082f5c]">{formatRupiah(book.price)}</p>
-                                                            <div className="mt-auto grid grid-cols-2 gap-2 pt-3">
-                                                                <Link href={route('public.books.show', book.slug)} className="rounded-lg bg-[#073875] px-2 py-2 text-center text-[11px] font-bold text-white hover:bg-blue-900">Detail Buku</Link>
-                                                                <button type="button" onClick={() => shareBookWhatsApp(book)} className="rounded-lg border border-green-600 px-2 py-2 text-[11px] font-bold text-green-700 hover:bg-green-50">Bagikan</button>
-                                                            </div>
+
+                                                        <div className="absolute right-2 top-2 flex flex-col items-end gap-2">
+                                                            {book.is_best_seller && (
+                                                                <span className="rounded-full bg-amber-200 px-3 py-1 text-[10px] font-bold text-[#0b3a70] shadow-sm">
+                                                                    ★ Best Seller
+                                                                </span>
+                                                            )}
+
+                                                            {book.is_external_publication && (
+                                                                <span className="rounded-full bg-sky-100 px-3 py-1 text-[10px] font-bold text-sky-800 shadow-sm">
+                                                                    Terbitan Luar
+                                                                </span>
+                                                            )}
                                                         </div>
+                                                    </div>
                                                     </article>
                                                 ))}
                                             </div>

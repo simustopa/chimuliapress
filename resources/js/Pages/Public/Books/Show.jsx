@@ -1,7 +1,7 @@
 
 import { Head, Link } from '@inertiajs/react';
 
-export default function Show({ book, bookingFormUrl }) {
+export default function Show({ book }) {
     return (
         <>
             <Head title={`${book.title} | CHIMULIA PRESS`} />
@@ -197,7 +197,7 @@ export default function Show({ book, bookingFormUrl }) {
                                 )}
 
                                 {/* Pemesanan buku */}
-                                {bookingFormUrl && (
+                                {book.purchase_url &&  (
                                     <section className="mt-8 rounded-xl border border-blue-100 bg-blue-50/70 p-5 sm:p-6">
                                         <div className="flex items-start gap-3">
                                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#0b3a70] text-white">
@@ -233,7 +233,7 @@ export default function Show({ book, bookingFormUrl }) {
                                         </div>
 
                                         <a
-                                            href={bookingFormUrl}
+                                            href={book.purchase_url}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#0b3a70] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
