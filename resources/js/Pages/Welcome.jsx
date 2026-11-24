@@ -22,8 +22,45 @@ export default function Welcome({
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const [selectedBookCategory, setSelectedBookCategory] = useState('');
     const [bestSellerOnly, setBestSellerOnly] = useState(false);
+    const [externalPublicationOnly, setExternalPublicationOnly] = useState(false);
     const [activeService, setActiveService] = useState(null);
     const [pricingTab, setPricingTab] = useState('putus');
+    const serviceTheme = {
+        penerbitan: {
+            header: 'bg-emerald-600',
+            accent: 'text-emerald-600',
+            border: 'border-emerald-500',
+            badge: 'bg-emerald-600',
+            button: 'bg-emerald-600 hover:bg-emerald-700',
+            tab: 'bg-emerald-600',
+            soft: 'bg-emerald-50',
+            ring: 'focus:ring-emerald-100',
+        },
+        isbn: {
+            header: 'bg-amber-500',
+            accent: 'text-amber-600',
+            border: 'border-amber-400',
+            badge: 'bg-amber-500',
+            button: 'bg-amber-500 hover:bg-amber-600',
+            tab: 'bg-amber-500',
+            soft: 'bg-amber-50',
+            ring: 'focus:ring-amber-100',
+        },
+        hki: {
+            header: 'bg-cyan-600',
+            accent: 'text-cyan-600',
+            border: 'border-cyan-400',
+            badge: 'bg-cyan-600',
+            button: 'bg-cyan-600 hover:bg-cyan-700',
+            tab: 'bg-cyan-600',
+            soft: 'bg-cyan-50',
+            ring: 'focus:ring-cyan-100',
+        },
+    };
+
+    const currentTheme =
+        serviceTheme[activeService?.id] || serviceTheme.penerbitan;
+
     // Kode lainnya tetap di sini
     const [form, setForm] = useState({
         name: '',
@@ -94,14 +131,23 @@ export default function Welcome({
     }
 
     const filteredBooks = books.filter((book) => {
-        const matchesCategory =
+        const matchCategory =
             !selectedBookCategory ||
             book.categories?.some(
-                (category) => String(category.id) === String(selectedBookCategory)
+                (category) => String(category.id) === selectedBookCategory
             );
-        const matchesBestSeller =
-            !bestSellerOnly || Boolean(book.is_best_seller);
-        return matchesCategory && matchesBestSeller;
+
+        const matchBestSeller =
+            !bestSellerOnly || book.is_best_seller;
+
+        const matchExternalPublication =
+            !externalPublicationOnly || book.is_external_publication;
+
+        return (
+            matchCategory &&
+            matchBestSeller &&
+            matchExternalPublication
+        );
     });
 
     const visibleEvents = events.slice(0, 3);
@@ -320,6 +366,7 @@ export default function Welcome({
                                 </h2>
                             </div>
 
+
                             {/* KARTU LAYANAN */}
                             <div className="mt-8 grid gap-4 md:grid-cols-3">
                                 {[
@@ -328,34 +375,57 @@ export default function Welcome({
                                         icon: '▤',
                                         title: 'Penerbitan Buku Akademik',
                                         text: 'Menerbitkan buku berkualitas untuk mendukung pengembangan ilmu pengetahuan.',
-
+                                        theme: {
+                                            icon: 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white',
+                                            title: 'group-hover:text-blue-700',
+                                            border: 'hover:border-blue-300',
+                                            background: 'hover:bg-blue-50',
+                                            button: 'border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white',
+                                            shadow: 'hover:shadow-blue-100',
+                                        },
                                     },
                                     {
                                         id: 'isbn',
                                         icon: '✓',
                                         title: 'Pengurusan ISBN & E-ISBN',
                                         text: 'Pengurusan ISBN dan E-ISBN dengan proses mudah dan cepat.',
-
+                                        theme: {
+                                            icon: 'bg-amber-100 text-amber-600 group-hover:bg-amber-500 group-hover:text-white',
+                                            title: 'group-hover:text-amber-600',
+                                            border: 'hover:border-amber-300',
+                                            background: 'hover:bg-amber-50',
+                                            button: 'border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white',
+                                            shadow: 'hover:shadow-amber-100',
+                                        },
                                     },
                                     {
                                         id: 'hki',
                                         icon: '©',
                                         title: 'Hak Cipta & HKI Buku',
                                         text: 'Melindungi karya Anda dengan layanan pendaftaran hak cipta.',
-
+                                        theme: {
+                                            icon: 'bg-cyan-100 text-cyan-600 group-hover:bg-cyan-500 group-hover:text-white',
+                                            title: 'group-hover:text-cyan-700',
+                                            border: 'hover:border-cyan-300',
+                                            background: 'hover:bg-cyan-50',
+                                            button: 'border-cyan-500 text-cyan-600 hover:bg-cyan-500 hover:text-white',
+                                            shadow: 'hover:shadow-cyan-100',
+                                        },
                                     },
                                 ].map((service) => (
                                     <article
                                         key={service.id}
-                                        className="group flex flex-col justify-between rounded-2xl border border-white bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+                                        className={`group flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${service.theme.border} ${service.theme.background} ${service.theme.shadow}`}
                                     >
                                         <div className="flex items-start gap-4">
-                                            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-blue-50 text-3xl font-bold text-blue-600 shadow-inner transition group-hover:bg-blue-100">
+                                            <span
+                                                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-3xl font-bold shadow-inner transition-all duration-300 ${service.theme.icon}`}
+                                            >
                                                 {service.icon}
                                             </span>
 
                                             <div>
-                                                <h3 className="text-sm font-extrabold text-[#082f5c]">
+                                                <h3 className={`text-sm font-extrabold text-[#082f5c] transition-colors duration-300 ${service.theme.title}`}>
                                                     {service.title}
                                                 </h3>
 
@@ -371,13 +441,14 @@ export default function Welcome({
                                                 setActiveService(service);
                                                 setPricingTab('putus');
                                             }}
-                                            className="mt-5 w-full rounded-full border border-blue-700 px-4 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-700 hover:text-white"
+                                            className={`mt-5 w-full rounded-full border px-4 py-2.5 text-xs font-bold transition-all duration-300 ${service.theme.button}`}
                                         >
                                             ◉ Lihat Detail & Harga
                                         </button>
                                     </article>
                                 ))}
                             </div>
+
                         </div>
                     </section>
 
@@ -388,21 +459,25 @@ export default function Welcome({
                             onClick={() => setActiveService(null)}
                         >
                             <div
-                                className="my-auto w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+                                className="my-auto w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl"
                                 onClick={(e) => e.stopPropagation()}
                             >
+
                                 {/* HEADER POP-UP */}
-                                <div className="flex items-center justify-between bg-[#06A173] px-5 py-4 text-white sm:px-6">
+                                <div
+                                    className={`flex items-center justify-between px-5 py-4 text-white sm:px-6 ${currentTheme.header}`}
+                                >
                                     <div className="flex items-center gap-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 text-xl">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 text-2xl font-bold">
                                             {activeService.icon}
                                         </div>
 
                                         <div>
-                                            <h3 className="text-sm font-extrabold sm:text-base">
+                                            <h3 className="text-base font-extrabold sm:text-lg">
                                                 {activeService.title}
                                             </h3>
-                                            <p className="mt-1 text-[10px] text-blue-100">
+
+                                            <p className="mt-1 text-xs text-white/80">
                                                 Layanan Profesional
                                             </p>
                                         </div>
@@ -412,30 +487,35 @@ export default function Welcome({
                                         type="button"
                                         onClick={() => setActiveService(null)}
                                         aria-label="Tutup pop-up"
-                                        className="rounded-full p-2 text-xl text-white/80 transition hover:bg-white/20 hover:text-white"
+                                        className="rounded-full p-2 text-2xl text-white/80 transition hover:bg-white/20 hover:text-white"
                                     >
                                         ×
                                     </button>
                                 </div>
 
                                 {/* ISI POP-UP */}
-                                <div className="max-h-[75vh] overflow-y-auto p-4 sm:p-5">
+                                <div className="max-h-[75vh] overflow-y-auto p-4 sm:p-6">
 
-                                    {activeService.id === 'penerbitan' ? (
+                                    {/* =====================================
+                                        1. PENERBITAN BUKU AKADEMIK
+                                    ===================================== */}
+
+                                    {activeService.id === 'penerbitan' && (
                                         <>
-                                            <p className="mb-4 text-xs leading-5 text-slate-500">
-                                                Pilih skema penerbitan yang sesuai dengan kebutuhan dan rencana penerbitan buku Anda.
+                                            <p className="mb-5 text-sm leading-6 text-slate-500">
+                                                Pilih skema penerbitan yang sesuai dengan kebutuhan
+                                                dan rencana penerbitan buku Anda.
                                             </p>
 
                                             {/* TAB PILIHAN */}
-                                            <div className="mb-4 flex rounded-full bg-slate-100 p-1">
+                                            <div className="mb-5 flex rounded-full bg-slate-100 p-1">
                                                 <button
                                                     type="button"
                                                     onClick={() => setPricingTab('putus')}
-                                                    className={`flex-1 rounded-full px-3 py-2 text-xs font-bold transition ${
+                                                    className={`flex-1 rounded-full px-3 py-3 text-xs font-bold transition ${
                                                         pricingTab === 'putus'
-                                                            ? 'bg-blue-600 text-white shadow'
-                                                            : 'text-slate-500 hover:text-blue-600'
+                                                            ? `${currentTheme.tab} text-white shadow-md`
+                                                            : 'text-slate-500 hover:text-emerald-700'
                                                     }`}
                                                 >
                                                     ▣ Beli Putus
@@ -444,19 +524,20 @@ export default function Welcome({
                                                 <button
                                                     type="button"
                                                     onClick={() => setPricingTab('royalti')}
-                                                    className={`flex-1 rounded-full px-3 py-2 text-xs font-bold transition ${
+                                                    className={`flex-1 rounded-full px-3 py-3 text-xs font-bold transition ${
                                                         pricingTab === 'royalti'
-                                                            ? 'bg-blue-600 text-white shadow'
-                                                            : 'text-slate-500 hover:text-blue-600'
+                                                            ? `${currentTheme.tab} text-white shadow-md`
+                                                            : 'text-slate-500 hover:text-emerald-700'
                                                     }`}
                                                 >
                                                     % Skema Royalti
                                                 </button>
                                             </div>
 
-                                            {pricingTab === 'putus' ? (
+                                            {/* SKEMA BELI PUTUS */}
+                                            {pricingTab === 'putus' && (
                                                 <>
-                                                    <div className="grid gap-3 sm:grid-cols-3">
+                                                    <div className="grid gap-4 sm:grid-cols-3">
 
                                                         {[
                                                             {
@@ -510,40 +591,50 @@ export default function Welcome({
                                                         ].map((plan) => (
                                                             <div
                                                                 key={plan.name}
-                                                                className={`relative flex flex-col rounded-xl border p-3 ${
+                                                                className={`relative flex flex-col rounded-2xl border p-4 transition hover:-translate-y-1 hover:shadow-lg ${
                                                                     plan.popular
-                                                                        ? 'border-blue-600 shadow-md'
+                                                                        ? `${currentTheme.border} shadow-md`
                                                                         : 'border-slate-200'
                                                                 }`}
                                                             >
                                                                 {plan.popular && (
-                                                                    <span className="absolute -top-2.5 right-2 rounded-full bg-blue-600 px-2 py-1 text-[9px] font-bold text-white">
+                                                                    <span
+                                                                        className={`absolute -top-3 right-3 rounded-full px-3 py-1 text-[9px] font-bold text-white ${currentTheme.badge}`}
+                                                                    >
                                                                         ★ POPULER
                                                                     </span>
                                                                 )}
 
-                                                                <span className="w-fit rounded border border-slate-200 bg-slate-50 px-2 py-0.5 text-[9px] font-semibold text-slate-600">
+                                                                <span className="w-fit rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-600">
                                                                     {plan.name}
                                                                 </span>
 
-                                                                <h4 className="mt-2 text-xl font-extrabold text-blue-600">
+                                                                <h4 className={`mt-3 text-2xl font-extrabold ${currentTheme.accent}`}>
                                                                     {plan.price}
                                                                 </h4>
 
-                                                                <p className="mt-1 min-h-8 text-[10px] text-slate-500">
+                                                                <p className="mt-1 min-h-8 text-xs text-slate-500">
                                                                     {plan.description}
                                                                 </p>
 
-                                                                <ul className="mt-3 space-y-2 text-[10px] leading-4 text-slate-600">
+                                                                <ul className="mt-4 flex-1 space-y-2.5 text-[11px] leading-5 text-slate-600">
                                                                     {plan.features.map((feature) => (
-                                                                        <li key={feature} className="flex gap-1.5">
-                                                                            <span className="font-bold text-green-600">●</span>
+                                                                        <li
+                                                                            key={feature}
+                                                                            className="flex gap-2"
+                                                                        >
+                                                                            <span className="font-bold text-green-600">
+                                                                                ●
+                                                                            </span>
                                                                             <span>{feature}</span>
                                                                         </li>
                                                                     ))}
 
                                                                     {plan.unavailable.map((feature) => (
-                                                                        <li key={feature} className="flex gap-1.5 text-slate-400">
+                                                                        <li
+                                                                            key={feature}
+                                                                            className="flex gap-2 text-slate-400"
+                                                                        >
                                                                             <span>⊗</span>
                                                                             <span>{feature}</span>
                                                                         </li>
@@ -551,10 +642,12 @@ export default function Welcome({
                                                                 </ul>
 
                                                                 <a
-                                                                    href={`https://wa.me/6285337185881?text=${encodeURIComponent(`Halo CHIMULIA PRESS, saya tertarik dengan paket ${plan.name} penerbitan buku.`)}`}
+                                                                    href={`https://wa.me/6285337185881?text=${encodeURIComponent(
+                                                                        `Halo CHIMULIA PRESS, saya tertarik dengan paket ${plan.name} penerbitan buku.`
+                                                                    )}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="mt-4 rounded-lg bg-blue-600 px-2 py-2 text-center text-[10px] font-bold text-white transition hover:bg-blue-700"
+                                                                    className={`mt-5 rounded-lg px-3 py-3 text-center text-xs font-bold text-white transition ${currentTheme.button}`}
                                                                 >
                                                                     Pilih Paket
                                                                 </a>
@@ -562,30 +655,35 @@ export default function Welcome({
                                                         ))}
                                                     </div>
 
-                                                    <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-[10px] leading-5 text-slate-600">
-                                                        <span className="font-bold text-amber-500">◷</span>
-                                                        <strong> Estimasi waktu:</strong> 4–8 minggu (tergantung paket).
+                                                    <div className={`mt-5 rounded-xl border border-emerald-100 p-4 text-xs leading-5 text-slate-600 ${currentTheme.soft}`}>
+                                                        <span className={`font-bold ${currentTheme.accent}`}>
+                                                            ◷
+                                                        </span>
+                                                        <strong> Estimasi waktu:</strong> 4–8 minggu
+                                                        (tergantung paket).
                                                     </div>
                                                 </>
-                                            ) : (
+                                            )}
+
+                                            {/* SKEMA ROYALTI */}
+                                            {pricingTab === 'royalti' && (
                                                 <>
-                                                    {/* DESKRIPSI ROYALTI */}
-                                                    <p className="mb-4 text-[10px] leading-5 text-slate-500">
-                                                        <span className="mr-1 text-slate-400">ⓘ</span>
-                                                        Tanpa biaya penerbitan. Penulis dapat <strong>royalti 10%</strong> dari setiap buku yang terjual.
+                                                    <p className="mb-5 text-xs leading-5 text-slate-500">
+                                                        <span className={`mr-1 ${currentTheme.accent}`}>ⓘ</span>
+                                                        Tanpa biaya penerbitan. Penulis dapat
+                                                        <strong> royalti 10%</strong> dari setiap
+                                                        buku yang terjual.
                                                     </p>
 
-                                                    {/* PANEL ROYALTI */}
-                                                    <div className="grid gap-3 sm:grid-cols-2">
+                                                    <div className="grid gap-4 sm:grid-cols-2">
 
-                                                        {/* ALUR SKEMA ROYALTI */}
-                                                        <div className="rounded-xl bg-slate-50 p-4">
-                                                            <h4 className="flex items-center gap-2 text-xs font-extrabold text-slate-700">
-                                                                <span className="text-blue-600">♧</span>
-                                                                Bagaimana Skema Royalti Bekerja?
+                                                        {/* ALUR ROYALTI */}
+                                                        <div className={`rounded-2xl p-5 ${currentTheme.soft}`}>
+                                                            <h4 className={`text-sm font-extrabold ${currentTheme.accent}`}>
+                                                                ♧ Bagaimana Skema Royalti Bekerja?
                                                             </h4>
 
-                                                            <div className="mt-4 space-y-4">
+                                                            <div className="mt-5 space-y-5">
                                                                 {[
                                                                     {
                                                                         title: 'Penulis kirim naskah',
@@ -604,16 +702,20 @@ export default function Welcome({
                                                                         description: 'Dibayarkan setiap 6 bulan',
                                                                     },
                                                                 ].map((step, index) => (
-                                                                    <div key={step.title} className="flex gap-2.5">
-                                                                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+                                                                    <div
+                                                                        key={step.title}
+                                                                        className="flex gap-3"
+                                                                    >
+                                                                        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${currentTheme.tab}`}>
                                                                             {index + 1}
                                                                         </span>
 
                                                                         <div>
-                                                                            <h5 className="text-[10px] font-bold text-slate-700">
+                                                                            <h5 className="text-xs font-bold text-slate-700">
                                                                                 {step.title}
                                                                             </h5>
-                                                                            <p className="mt-0.5 text-[9px] leading-4 text-slate-500">
+
+                                                                            <p className="mt-1 text-[10px] leading-4 text-slate-500">
                                                                                 {step.description}
                                                                             </p>
                                                                         </div>
@@ -622,28 +724,28 @@ export default function Welcome({
                                                             </div>
                                                         </div>
 
-                                                        {/* INFORMASI PERSENTASE ROYALTI */}
-                                                        <div className="relative rounded-xl border border-green-600 bg-gradient-to-br from-green-50 to-white p-4">
+                                                        {/* INFORMASI ROYALTI */}
+                                                        <div className={`relative rounded-2xl border p-5 ${currentTheme.border} ${currentTheme.soft}`}>
 
-                                                            <span className="absolute right-2 top-2 rounded-full bg-green-700 px-2 py-1 text-[8px] font-bold text-white">
+                                                            <span className={`absolute right-3 top-3 rounded-full px-3 py-1 text-[9px] font-bold text-white ${currentTheme.badge}`}>
                                                                 ★ REKOMENDASI
                                                             </span>
 
-                                                            <h4 className="flex items-center gap-2 text-xs font-extrabold text-green-700">
-                                                                <span>％</span>
-                                                                Skema Royalti
+                                                            <h4 className={`text-sm font-extrabold ${currentTheme.accent}`}>
+                                                                ％ Skema Royalti
                                                             </h4>
 
-                                                            <div className="my-5 text-center">
-                                                                <h3 className="text-4xl font-extrabold tracking-tight text-green-700 sm:text-5xl">
+                                                            <div className="my-7 text-center">
+                                                                <h3 className={`text-5xl font-extrabold ${currentTheme.accent}`}>
                                                                     10%
                                                                 </h3>
-                                                                <p className="mt-1 text-[10px] text-slate-500">
+
+                                                                <p className="mt-2 text-xs text-slate-500">
                                                                     Royalti per buku terjual
                                                                 </p>
                                                             </div>
 
-                                                            <ul className="space-y-2 text-[9px] leading-4 text-slate-600">
+                                                            <ul className="space-y-3 text-[11px] leading-5 text-slate-600">
                                                                 {[
                                                                     'Biaya penerbitan GRATIS',
                                                                     'Hak cipta tetap milik penulis',
@@ -653,9 +755,14 @@ export default function Welcome({
                                                                     'Kontrak 5 tahun',
                                                                     'Royalti dibayar per 6 bulan',
                                                                 ].map((feature) => (
-                                                                    <li key={feature} className="flex items-start gap-1.5">
-                                                                        <span className="font-bold text-green-600">●</span>
-                                                                        <span>{feature}</span>
+                                                                    <li
+                                                                        key={feature}
+                                                                        className="flex gap-2"
+                                                                    >
+                                                                        <span className={`font-bold ${currentTheme.accent}`}>
+                                                                            ●
+                                                                        </span>
+                                                                        {feature}
                                                                     </li>
                                                                 ))}
                                                             </ul>
@@ -663,13 +770,12 @@ export default function Welcome({
                                                     </div>
 
                                                     {/* SYARAT ROYALTI */}
-                                                    <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                                                        <h4 className="flex items-center gap-1.5 text-[10px] font-extrabold text-amber-600">
-                                                            <span>ⓘ</span>
-                                                            Syarat Skema Royalti:
+                                                    <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                                        <h4 className={`text-xs font-extrabold ${currentTheme.accent}`}>
+                                                            ⓘ Syarat Skema Royalti:
                                                         </h4>
 
-                                                        <ul className="mt-2 list-disc space-y-1 pl-4 text-[9px] leading-4 text-slate-600">
+                                                        <ul className="mt-3 list-disc space-y-1.5 pl-5 text-[10px] leading-5 text-slate-600">
                                                             <li>Naskah lolos kurasi & review editor HUMANIS Press</li>
                                                             <li>Minimal 100 halaman</li>
                                                             <li>Belum pernah diterbitkan penerbit lain</li>
@@ -679,142 +785,106 @@ export default function Welcome({
                                                 </>
                                             )}
                                         </>
-                                    ) : (
+                                    )}
 
-                                        <div>
-                                            {/* DESKRIPSI LAYANAN */}
-                                            <p className="mb-4 text-[10px] leading-5 text-slate-500">
-                                                <span className="mr-1 text-slate-400">ⓘ</span>
-                                                {activeService.id === 'isbn'
-                                                    ? <>ISBN untuk buku cetak & E-ISBN untuk buku digital. Proses <strong>3–7 hari kerja.</strong></>
-                                                    : <>Perlindungan hukum untuk karya intelektual Anda. Proses <strong>1–3 bulan.</strong></>}
+                                    {/* =====================================
+                                        2. ISBN & E-ISBN
+                                    ===================================== */}
+
+                                    {activeService.id === 'isbn' && (
+                                        <>
+                                            <p className="mb-5 text-xs leading-6 text-slate-500">
+                                                <span className={`mr-1 ${currentTheme.accent}`}>ⓘ</span>
+                                                ISBN untuk buku cetak & E-ISBN untuk buku digital.
+                                                Proses <strong>3–7 hari kerja.</strong>
                                             </p>
 
-                                            {/* DAFTAR PAKET */}
-                                            <div className={`grid gap-3 ${activeService.id === 'isbn' ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
-                                                {(activeService.id === 'isbn'
-                                                    ? [
-                                                        {
-                                                            name: 'ISBN Saja',
-                                                            price: 'Rp 300rb',
-                                                            description: 'Untuk buku cetak saja',
-                                                            features: [
-                                                                '1 ISBN buku cetak',
-                                                                'Sertifikat ISBN',
-                                                                'Barcode cetak',
-                                                                'Input Perpusnas',
-                                                            ],
-                                                        },
-                                                        {
-                                                            name: 'ISBN + E-ISBN',
-                                                            price: 'Rp 500rb',
-                                                            description: 'Buku cetak + digital',
-                                                            popular: true,
-                                                            features: [
-                                                                'ISBN cetak + E-ISBN',
-                                                                'Sertifikat lengkap',
-                                                                'Barcode cetak',
-                                                                'Input Perpusnas',
-                                                                'Verifikasi 2x',
-                                                            ],
-                                                        },
-                                                        {
-                                                            name: 'Paket Lengkap',
-                                                            price: 'Rp 750rb',
-                                                            description: 'Lengkap + HAKI',
-                                                            features: [
-                                                                'Semua fitur ISBN + E-ISBN',
-                                                                'Pengurusan HAKI',
-                                                                'Konsultasi penerbitan',
-                                                                'Prioritas proses',
-                                                            ],
-                                                        },
-                                                    ]
-                                                    : [
-                                                        {
-                                                            name: 'Hak Cipta Buku',
-                                                            price: 'Rp 500rb',
-                                                            description: 'Untuk perlindungan naskah buku',
-                                                            popular: true,
-                                                            features: [
-                                                                'Pendaftaran Hak Cipta',
-                                                                'Sertifikat DJKI',
-                                                                'Pendampingan proses',
-                                                                'Konsultasi HKI',
-                                                            ],
-                                                        },
-                                                        {
-                                                            name: 'Hak Cipta + Merek',
-                                                            price: 'Rp 2,5jt',
-                                                            description: 'Lengkap untuk buku + merek dagang',
-                                                            features: [
-                                                                'Hak Cipta buku',
-                                                                'Pendaftaran merek',
-                                                                'Konsultasi HKI',
-                                                                'Prioritas proses',
-                                                            ],
-                                                        },
-                                                    ]
-                                                ).map((plan) => (
+                                            <div className="grid gap-4 sm:grid-cols-3">
+
+                                                {[
+                                                    {
+                                                        name: 'ISBN Saja',
+                                                        price: 'Rp 300rb',
+                                                        description: 'Untuk buku cetak saja',
+                                                        features: [
+                                                            '1 ISBN buku cetak',
+                                                            'Sertifikat ISBN',
+                                                            'Barcode cetak',
+                                                            'Input Perpusnas',
+                                                        ],
+                                                    },
+                                                    {
+                                                        name: 'ISBN + E-ISBN',
+                                                        price: 'Rp 500rb',
+                                                        description: 'Buku cetak + digital',
+                                                        popular: true,
+                                                        features: [
+                                                            'ISBN cetak + E-ISBN',
+                                                            'Sertifikat lengkap',
+                                                            'Barcode cetak',
+                                                            'Input Perpusnas',
+                                                            'Verifikasi 2x',
+                                                        ],
+                                                    },
+                                                    {
+                                                        name: 'Paket Lengkap',
+                                                        price: 'Rp 750rb',
+                                                        description: 'Lengkap + HAKI',
+                                                        features: [
+                                                            'Semua fitur ISBN + E-ISBN',
+                                                            'Pengurusan HAKI',
+                                                            'Konsultasi penerbitan',
+                                                            'Prioritas proses',
+                                                        ],
+                                                    },
+                                                ].map((plan) => (
                                                     <div
                                                         key={plan.name}
-                                                        className={`relative flex flex-col rounded-xl border p-3 transition hover:shadow-md ${
+                                                        className={`relative flex flex-col rounded-2xl border p-4 transition hover:-translate-y-1 hover:shadow-lg ${
                                                             plan.popular
-                                                                ? activeService.id === 'isbn'
-                                                                    ? 'border-amber-400 shadow-md'
-                                                                    : 'border-cyan-400 shadow-md'
+                                                                ? `${currentTheme.border} shadow-md`
                                                                 : 'border-slate-200'
                                                         }`}
                                                     >
-                                                        {/* LABEL POPULER */}
                                                         {plan.popular && (
-                                                            <span className={`absolute -top-2.5 right-2 rounded-full px-2 py-1 text-[8px] font-bold text-white ${
-                                                                activeService.id === 'isbn'
-                                                                    ? 'bg-amber-500'
-                                                                    : 'bg-cyan-500'
-                                                            }`}>
+                                                            <span className={`absolute -top-3 right-3 rounded-full px-3 py-1 text-[9px] font-bold text-white ${currentTheme.badge}`}>
                                                                 ★ POPULER
                                                             </span>
                                                         )}
 
-                                                        <span className="w-fit rounded border border-slate-200 bg-slate-50 px-2 py-0.5 text-[9px] font-semibold text-slate-600">
+                                                        <span className="w-fit rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-600">
                                                             {plan.name}
                                                         </span>
 
-                                                        <h4 className={`mt-2 text-xl font-extrabold ${
-                                                            activeService.id === 'isbn'
-                                                                ? 'text-amber-500'
-                                                                : 'text-cyan-500'
-                                                        }`}>
+                                                        <h4 className={`mt-3 text-2xl font-extrabold ${currentTheme.accent}`}>
                                                             {plan.price}
                                                         </h4>
 
-                                                        <p className="mt-1 min-h-8 text-[9px] leading-4 text-slate-500">
+                                                        <p className="mt-1 min-h-8 text-xs text-slate-500">
                                                             {plan.description}
                                                         </p>
 
-                                                        {/* FITUR PAKET */}
-                                                        <ul className="mt-3 flex-1 space-y-2 text-[9px] leading-4 text-slate-600">
+                                                        <ul className="mt-4 flex-1 space-y-3 text-[11px] leading-5 text-slate-600">
                                                             {plan.features.map((feature) => (
-                                                                <li key={feature} className="flex items-start gap-1.5">
-                                                                    <span className="font-bold text-green-600">●</span>
-                                                                    <span>{feature}</span>
+                                                                <li
+                                                                    key={feature}
+                                                                    className="flex gap-2"
+                                                                >
+                                                                    <span className="font-bold text-green-600">
+                                                                        ●
+                                                                    </span>
+                                                                    {feature}
                                                                 </li>
                                                             ))}
                                                         </ul>
 
-                                                        {/* TOMBOL PILIH PAKET */}
                                                         <a
                                                             href={`https://wa.me/6285337185881?text=${encodeURIComponent(
                                                                 `Halo CHIMULIA PRESS, saya tertarik dengan paket ${plan.name} untuk layanan ${activeService.title}. Mohon informasi lebih lanjut.`
                                                             )}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className={`mt-4 rounded-lg px-2 py-2 text-center text-[10px] font-bold text-white transition ${
-                                                                activeService.id === 'isbn'
-                                                                    ? 'bg-amber-500 hover:bg-amber-600'
-                                                                    : 'bg-cyan-500 hover:bg-cyan-600'
-                                                            }`}
+                                                            className={`mt-5 rounded-lg px-3 py-3 text-center text-xs font-bold text-white transition ${currentTheme.button}`}
                                                         >
                                                             Pilih Paket
                                                         </a>
@@ -822,33 +892,129 @@ export default function Welcome({
                                                 ))}
                                             </div>
 
-                                            {/* ESTIMASI WAKTU */}
-                                            <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-[10px] leading-5 text-slate-600">
-                                                <span className={`font-bold ${
-                                                    activeService.id === 'isbn'
-                                                        ? 'text-amber-500'
-                                                        : 'text-cyan-500'
-                                                }`}>
+                                            <div className={`mt-5 rounded-xl border border-amber-100 p-4 text-xs leading-5 text-slate-600 ${currentTheme.soft}`}>
+                                                <span className={`font-bold ${currentTheme.accent}`}>
                                                     ◷
                                                 </span>
-
-                                                <strong> Estimasi waktu:</strong>{' '}
-                                                {activeService.id === 'isbn'
-                                                    ? '3–7 hari kerja setelah dokumen lengkap.'
-                                                    : '1–3 bulan setelah dokumen lengkap.'}
+                                                <strong> Estimasi waktu:</strong> 3–7 hari kerja
+                                                setelah dokumen lengkap.
                                             </div>
-                                        </div>
-
+                                        </>
                                     )}
 
+                                    {/* =====================================
+                                        3. HAK CIPTA & HKI
+                                    ===================================== */}
 
-                                    {/* TOMBOL KONSULTASI */}
-                                    <div className="mt-5 flex flex-col-reverse gap-2 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                                    {activeService.id === 'hki' && (
+                                        <>
+                                            <p className="mb-5 text-xs leading-6 text-slate-500">
+                                                <span className={`mr-1 ${currentTheme.accent}`}>ⓘ</span>
+                                                Perlindungan hukum untuk karya intelektual Anda.
+                                                Proses <strong>1–3 bulan.</strong>
+                                            </p>
+
+                                            <div className="grid gap-4 sm:grid-cols-2">
+
+                                                {[
+                                                    {
+                                                        name: 'Hak Cipta Buku',
+                                                        price: 'Rp 500rb',
+                                                        description: 'Untuk perlindungan naskah buku',
+                                                        popular: true,
+                                                        features: [
+                                                            'Pendaftaran Hak Cipta',
+                                                            'Sertifikat DJKI',
+                                                            'Pendampingan proses',
+                                                            'Konsultasi HKI',
+                                                        ],
+                                                    },
+                                                    {
+                                                        name: 'Hak Cipta + Merek',
+                                                        price: 'Rp 2,5jt',
+                                                        description: 'Lengkap untuk buku + merek dagang',
+                                                        features: [
+                                                            'Hak Cipta buku',
+                                                            'Pendaftaran merek',
+                                                            'Konsultasi HKI',
+                                                            'Prioritas proses',
+                                                        ],
+                                                    },
+                                                ].map((plan) => (
+                                                    <div
+                                                        key={plan.name}
+                                                        className={`relative flex flex-col rounded-2xl border p-5 transition hover:-translate-y-1 hover:shadow-lg ${
+                                                            plan.popular
+                                                                ? `${currentTheme.border} shadow-md`
+                                                                : 'border-slate-200'
+                                                        }`}
+                                                    >
+                                                        {plan.popular && (
+                                                            <span className={`absolute -top-3 right-3 rounded-full px-3 py-1 text-[9px] font-bold text-white ${currentTheme.badge}`}>
+                                                                ★ POPULER
+                                                            </span>
+                                                        )}
+
+                                                        <span className="w-fit rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-600">
+                                                            {plan.name}
+                                                        </span>
+
+                                                        <h4 className={`mt-3 text-2xl font-extrabold ${currentTheme.accent}`}>
+                                                            {plan.price}
+                                                        </h4>
+
+                                                        <p className="mt-2 min-h-8 text-xs text-slate-500">
+                                                            {plan.description}
+                                                        </p>
+
+                                                        <ul className="mt-5 flex-1 space-y-3 text-xs leading-5 text-slate-600">
+                                                            {plan.features.map((feature) => (
+                                                                <li
+                                                                    key={feature}
+                                                                    className="flex gap-2"
+                                                                >
+                                                                    <span className="font-bold text-green-600">
+                                                                        ●
+                                                                    </span>
+                                                                    {feature}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+
+                                                        <a
+                                                            href={`https://wa.me/6285337185881?text=${encodeURIComponent(
+                                                                `Halo CHIMULIA PRESS, saya tertarik dengan paket ${plan.name} untuk layanan ${activeService.title}. Mohon informasi lebih lanjut.`
+                                                            )}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className={`mt-5 rounded-lg px-3 py-3 text-center text-xs font-bold text-white transition ${currentTheme.button}`}
+                                                        >
+                                                            Pilih Paket
+                                                        </a>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <div className={`mt-5 rounded-xl border border-cyan-100 p-4 text-xs leading-5 text-slate-600 ${currentTheme.soft}`}>
+                                                <span className={`font-bold ${currentTheme.accent}`}>
+                                                    ◷
+                                                </span>
+                                                <strong> Estimasi waktu:</strong> 1–3 bulan
+                                                setelah dokumen lengkap.
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {/* =====================================
+                                        FOOTER POP-UP
+                                    ===================================== */}
+
+                                    <div className="mt-6 flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
 
                                         <button
                                             type="button"
                                             onClick={() => setActiveService(null)}
-                                            className="rounded-full bg-slate-200 px-5 py-2 text-xs font-bold text-slate-600 transition hover:bg-slate-300"
+                                            className="rounded-full bg-slate-200 px-6 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-300"
                                         >
                                             Tutup
                                         </button>
@@ -859,13 +1025,7 @@ export default function Welcome({
                                             )}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className={`rounded-full px-5 py-2.5 text-center text-xs font-bold text-white transition ${
-                                                activeService.id === 'isbn'
-                                                    ? 'bg-amber-500 hover:bg-amber-600'
-                                                    : activeService.id === 'hki'
-                                                        ? 'bg-green-600 hover:bg-green-700'
-                                                        : 'bg-green-600 hover:bg-green-700'
-                                            }`}
+                                            className={`rounded-full px-6 py-3 text-center text-xs font-bold text-white shadow-sm transition ${currentTheme.button}`}
                                         >
                                             ◉{' '}
                                             {activeService.id === 'isbn'
@@ -876,93 +1036,311 @@ export default function Welcome({
                                         </a>
 
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
                     )}
 
 
-                    {/* KATALOG */}
-                    <section id="katalog" className="scroll-mt-20 bg-white py-12 sm:py-14">
-                        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-                            <div className="rounded-[2rem] bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm ring-1 ring-slate-100 sm:p-8">
-                                <div className="grid gap-6 lg:grid-cols-[.75fr_1.6fr] lg:items-center">
-                                    <div>
-                                        <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-[#073875]"><span className="h-0.5 w-7 bg-amber-400" /> Koleksi Terbitan</p>
-                                        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[#082f5c] sm:text-4xl">Katalog Buku</h2>
-                                        <p className="mt-3 text-sm leading-6 text-slate-600">Jelajahi koleksi buku terbaru kami, dari referensi ilmiah hingga buku pendidikan.</p>
-                                        <Link href="/katalog-buku" className="mt-5 inline-flex rounded-full bg-[#073875] px-5 py-3 text-xs font-bold text-white transition hover:bg-blue-900">
-                                            Lihat Semua Buku <span className="ml-2">→</span>
+                    {/* =========================================
+                        KATALOG BUKU CHIMULIA PRESS
+                    ========================================= */}
+                    <section id="katalog" className="bg-white py-12 sm:py-16">
+                        <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+
+                            {/* PANEL UTAMA */}
+                            <div className="overflow-hidden rounded-[32px] border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm sm:p-10">
+
+                                <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
+
+                                    {/* =================================
+                                        BAGIAN KIRI: JUDUL DAN FILTER
+                                    ================================= */}
+                                    <div className="lg:col-span-4">
+
+                                        {/* Label */}
+                                        <div className="mb-5 flex items-center gap-3">
+                                            <span className="h-[2px] w-8 bg-amber-400"></span>
+
+                                            <span className="text-sm font-semibold uppercase tracking-wide text-[#0b3a70]">
+                                                Koleksi Terbitan
+                                            </span>
+                                        </div>
+
+                                        {/* Judul */}
+                                        <h2 className="text-3xl font-semibold leading-tight text-[#0b3a70] sm:text-4xl">
+                                            Katalog Buku
+                                            <br />
+                                            CHIMULIA PRESS
+                                        </h2>
+
+                                        {/* Deskripsi */}
+                                        <p className="mt-4 max-w-md text-sm leading-7 text-slate-600 sm:text-base">
+                                            Jelajahi koleksi buku terbaru kami dari referensi
+                                            ilmiah hingga buku pendidikan.
+                                        </p>
+
+                                        {/* Tombol Semua Buku */}
+                                        <Link
+                                            href="/katalog-buku"
+                                            className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#0b3a70] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-900"
+                                        >
+                                            Lihat Semua Buku
+                                            <span>→</span>
                                         </Link>
-                                        <div className="mt-5 flex flex-wrap gap-2">
+
+                                        {/* =================================
+                                            FILTER KATALOG
+                                        ================================= */}
+                                        <div className="mt-6 flex flex-wrap items-center gap-3">
+
+                                            {/* Filter Kategori */}
                                             <select
                                                 value={selectedBookCategory}
-                                                onChange={(event) => setSelectedBookCategory(event.target.value)}
-                                                aria-label="Filter kategori buku"
-                                                className="max-w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 outline-none focus:border-blue-500"
+                                                onChange={(e) =>
+                                                    setSelectedBookCategory(e.target.value)
+                                                }
+                                                className="min-w-[180px] rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-500"
                                             >
                                                 <option value="">Semua Kategori</option>
-                                                {bookCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+
+                                                {bookCategories.map((category) => (
+                                                    <option
+                                                        key={category.id}
+                                                        value={String(category.id)}
+                                                    >
+                                                        {category.name}
+                                                    </option>
+                                                ))}
                                             </select>
+
+                                            {/* Filter Best Seller */}
                                             <button
                                                 type="button"
-                                                onClick={() => setBestSellerOnly((current) => !current)}
-                                                aria-pressed={bestSellerOnly}
-                                                className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${bestSellerOnly ? 'border-amber-500 bg-amber-400 text-slate-900' : 'border-amber-200 bg-white text-amber-700 hover:bg-amber-50'}`}
+                                                onClick={() =>
+                                                    setBestSellerOnly(!bestSellerOnly)
+                                                }
+                                                className={`rounded-full border px-4 py-2.5 text-sm font-semibold transition ${
+                                                    bestSellerOnly
+                                                        ? 'border-amber-400 bg-amber-100 text-amber-800'
+                                                        : 'border-amber-300 bg-white text-amber-700 hover:bg-amber-50'
+                                                }`}
                                             >
                                                 ★ Best Seller
                                             </button>
+
+                                            {/* Filter Terbitan Luar */}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setExternalPublicationOnly(
+                                                        !externalPublicationOnly
+                                                    )
+                                                }
+                                                className={`rounded-full border px-4 py-2.5 text-sm font-semibold transition ${
+                                                    externalPublicationOnly
+                                                        ? 'border-sky-400 bg-sky-100 text-sky-800'
+                                                        : 'border-sky-200 bg-white text-sky-700 hover:bg-sky-50'
+                                                }`}
+                                            >
+                                                Terbitan Luar
+                                            </button>
                                         </div>
+
+                                        {/* Reset Filter */}
+                                        {(selectedBookCategory ||
+                                            bestSellerOnly ||
+                                            externalPublicationOnly) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedBookCategory('');
+                                                    setBestSellerOnly(false);
+                                                    setExternalPublicationOnly(false);
+                                                }}
+                                                className="mt-3 text-xs font-medium text-slate-500 hover:text-blue-700"
+                                            >
+                                                Reset Filter
+                                            </button>
+                                        )}
                                     </div>
 
-                                    <div>
+                                    {/* =================================
+                                        BAGIAN KANAN: DAFTAR BUKU
+                                    ================================= */}
+                                    <div className="lg:col-span-8">
+
+                                        {/* Informasi Jumlah Buku */}
+                                        <div className="mb-4 flex items-center justify-between">
+                                            <p className="text-sm text-slate-500">
+                                                Menampilkan {filteredBooks.length} buku
+                                            </p>
+
+                                            <Link
+                                                href="/katalog-buku"
+                                                className="text-xs font-semibold text-[#0b3a70] hover:underline"
+                                            >
+                                                Lihat katalog →
+                                            </Link>
+                                        </div>
+
+                                        {/* GRID BUKU */}
                                         {filteredBooks.length > 0 ? (
-                                            <div className="flex snap-x gap-4 overflow-x-auto pb-3">
+                                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+
                                                 {filteredBooks.map((book) => (
-                                                    <article key={book.id} className="flex w-[205px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg sm:w-[220px]">
-                                                        <div className="relative">
+
+                                            <article
+                                                key={book.id}
+                                                className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
+                                            >
+                                                {/* COVER BUKU */}
+                                                <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                                                    {book.cover_image ? (
+                                                        <img
+                                                            src={`/storage/${book.cover_image}`}
+                                                            alt={book.title}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="flex h-full items-center justify-center text-xs text-slate-400">
+                                                            Sampul belum tersedia
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* INFORMASI BUKU */}
+                                                <div className="p-3">
+
+                                                    {/* BADGE: DI BAWAH COVER */}
+                                                    <div className="mb-2 flex flex-wrap items-center gap-1.5">
+
+                                                        {/* READY / PREORDER */}
+                                                        <span
+                                                            className={`rounded-full px-2 py-1 text-[9px] font-bold sm:text-[10px] ${
+                                                                book.status_stok === 'preorder'
+                                                                    ? 'bg-amber-100 text-amber-800'
+                                                                    : 'bg-emerald-100 text-emerald-800'
+                                                            }`}
+                                                        >
+                                                            {book.status_stok === 'preorder' ? 'Preorder' : 'Ready'}
+                                                        </span>
+
+                                                        {/* TERBITAN LUAR */}
+                                                        {book.is_external_publication == 1 && (
+                                                            <span className="rounded-full bg-sky-100 px-2 py-1 text-[9px] font-bold text-sky-800 sm:text-[10px]">
+                                                                Terbitan Luar
+                                                            </span>
+                                                        )}
+
+                                                        {/* BEST SELLER */}
+                                                        {book.is_best_seller == 1 && (
+                                                            <span className="rounded-full bg-amber-300 px-2 py-1 text-[9px] font-bold text-amber-950 sm:text-[10px]">
+                                                                ★ Best Seller
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* JUDUL BUKU */}
+                                                    <Link
+                                                        href={route('public.books.show', book.slug)}
+                                                        className="line-clamp-2 min-h-10 text-xs font-bold leading-5 text-slate-800 hover:text-blue-700 sm:text-sm"
+                                                    >
+                                                        {book.title}
+                                                    </Link>
+
+                                                    {/* NAMA PENULIS */}
+                                                    <p className="mt-1 truncate text-[10px] text-slate-500 sm:text-xs">
+                                                        {book.authors?.length > 0
+                                                            ? book.authors.map((author) => author.name).join(', ')
+                                                            : 'CHIMULIA PRESS'}
+                                                    </p>
+
+                                                    {/* HARGA */}
+                                                    <p className="mt-3 text-sm font-bold text-[#0b3a70] sm:text-base">
+                                                        {formatRupiah(book.price)}
+                                                    </p>
+
+                                                    {/* JUMLAH TERJUAL */}
+                                                    <p className="mt-1 text-[10px] text-slate-500 sm:text-xs">
+                                                        <span className="font-semibold text-slate-700">
+                                                            {Number(book.sold_count || 0).toLocaleString('id-ID')}
+                                                        </span>{' '}
+                                                        terjual
+                                                    </p>
+
+                                                    {/* TOMBOL AKSI */}
+                                                    <div className="mt-3 grid grid-cols-3 gap-1">
+
+                                                        {/* SHARE */}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => shareBookWhatsApp(book)}
+                                                            className="rounded-md border border-slate-200 py-2 text-[10px] font-semibold text-slate-600 transition hover:border-green-500 hover:text-green-600 sm:text-xs"
+                                                        >
+                                                            Share
+                                                        </button>
+
+                                                        {/* BELI */}
+                                                        <a
+                                                            href={book.purchase_url || '#'}
+                                                            target={book.purchase_url ? '_blank' : undefined}
+                                                            rel={book.purchase_url ? 'noopener noreferrer' : undefined}
+                                                            onClick={(e) => {
+                                                                if (!book.purchase_url) {
+                                                                    e.preventDefault();
+                                                                }
+                                                            }}
+                                                            className={`rounded-md py-2 text-center text-[10px] font-semibold transition sm:text-xs ${
+                                                                book.purchase_url
+                                                                    ? 'bg-[#0b3a70] text-white hover:bg-blue-900'
+                                                                    : 'cursor-not-allowed bg-slate-200 text-slate-400'
+                                                            }`}
+                                                        >
+                                                            Beli
+                                                        </a>
+
+                                                        {/* DETAIL */}
                                                         <Link
                                                             href={route('public.books.show', book.slug)}
-                                                            className="flex h-48 items-center justify-center bg-slate-50 p-3"
+                                                            className="rounded-md border border-[#0b3a70] py-2 text-center text-[10px] font-semibold text-[#0b3a70] transition hover:bg-blue-50 sm:text-xs"
                                                         >
-                                                            {book.cover_image ? (
-                                                                <img
-                                                                    src={`/storage/${book.cover_image}`}
-                                                                    alt={`Sampul ${book.title}`}
-                                                                    loading="lazy"
-                                                                    className="h-full w-full object-contain"
-                                                                />
-                                                            ) : (
-                                                                <span className="text-xs text-slate-400">
-                                                                    Sampul belum tersedia
-                                                                </span>
-                                                            )}
+                                                            Detail
                                                         </Link>
-
-                                                        <div className="absolute right-2 top-2 flex flex-col items-end gap-2">
-                                                            {book.is_best_seller && (
-                                                                <span className="rounded-full bg-amber-200 px-3 py-1 text-[10px] font-bold text-[#0b3a70] shadow-sm">
-                                                                    ★ Best Seller
-                                                                </span>
-                                                            )}
-
-                                                            {book.is_external_publication && (
-                                                                <span className="rounded-full bg-sky-100 px-3 py-1 text-[10px] font-bold text-sky-800 shadow-sm">
-                                                                    Terbitan Luar
-                                                                </span>
-                                                            )}
-                                                        </div>
                                                     </div>
-                                                    </article>
+                                                </div>
+                                            </article>
+
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-                                                <p className="font-semibold text-slate-700">Buku tidak ditemukan.</p>
-                                                <p className="mt-2 text-sm text-slate-500">Coba pilih kategori lain atau nonaktifkan filter Best Seller.</p>
-                                                <button type="button" onClick={() => { setSelectedBookCategory(''); setBestSellerOnly(false); }} className="mt-4 rounded-full bg-blue-800 px-4 py-2 text-xs font-semibold text-white">Tampilkan Semua Buku</button>
+
+                                            /* =================================
+                                                KONDISI JIKA BUKU KOSONG
+                                            ================================= */
+                                            <div className="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
+
+                                                <span className="text-3xl">📚</span>
+
+                                                <p className="mt-3 text-sm font-semibold text-slate-700">
+                                                    Buku belum tersedia
+                                                </p>
+
+                                                <p className="mt-1 text-xs text-slate-500">
+                                                    Coba ubah kategori atau filter pilihan Anda.
+                                                </p>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedBookCategory('');
+                                                        setBestSellerOnly(false);
+                                                        setExternalPublicationOnly(false);
+                                                    }}
+                                                    className="mt-4 text-xs font-semibold text-blue-700 hover:text-blue-900"
+                                                >
+                                                    Reset Filter
+                                                </button>
                                             </div>
                                         )}
                                     </div>
@@ -970,6 +1348,7 @@ export default function Welcome({
                             </div>
                         </div>
                     </section>
+
 
                     {/* NEWS & DOKUMENTASI: TETAP DI HALAMAN UTAMA */}
                     <section className="bg-slate-50 py-12 sm:py-14">

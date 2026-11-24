@@ -82,11 +82,17 @@ Route::get('/', function () {
 
 
 
-Route::get('/katalog-buku', [PublicBookController::class, 'index'])
-    ->name('public.books.index');
+// Katalog Buku Publik
+Route::get('/katalog-buku', [
+    PublicBookController::class,
+    'index'
+])->name('public.books.index');
 
-Route::get('/katalog-buku/{book:slug}', [PublicBookController::class, 'show'])
-    ->name('public.books.show');
+// Detail Buku
+Route::get('/katalog-buku/{slug}', [
+    PublicBookController::class,
+    'show'
+])->name('public.books.show');
 
 // Dashboard berdasarkan role
 Route::middleware(['auth', 'verified'])->group(function () {

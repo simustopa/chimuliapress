@@ -10,7 +10,9 @@ use Inertia\Response;
 
 class PublicBookController extends Controller
 {
-
+    /**
+     * Menampilkan katalog buku publik.
+     */
     public function index(Request $request): Response
     {
         $search = $request->input('search');
@@ -19,13 +21,18 @@ class PublicBookController extends Controller
 
         $books = Book::query()
             ->where('status', 'published')
-            ->with(['authors:id,name', 'categories:id,name,slug'])
 
-            // Pencarian judul dan subtitle
+            ->with([
+                'authors:id,name',
+                'categories:id,name,slug',
+            ])
+
+            // Pencarian judul, subtitle, dan deskripsi
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('title', 'ilike', "%{$search}%")
-                        ->orWhere('subtitle', 'ilike', "%{$search}%");
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('subtitle', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             })
 
@@ -45,13 +52,14 @@ class PublicBookController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return Inertia::render('Public/Books/Index', [
             'books' => $books,
-
-            'categories' => Category::query()
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get(['id', 'name']),
+            'categories' => $categories,
 
             'filters' => [
                 'search' => $search ?? '',
@@ -61,15 +69,19 @@ class PublicBookController extends Controller
         ]);
     }
 
-
+    /**
+     * Menampilkan detail buku.
+     */
     public function show(string $slug): Response
     {
         $book = Book::query()
             ->where('slug', $slug)
             ->where('status', 'published')
-            ->with(['authors:id,name,email,bio', 'categories:id,name,slug'])
+            ->with([
+                'authors:id,name,email,bio',
+                'categories:id,name,slug',
+            ])
             ->firstOrFail();
-
 
         return Inertia::render('Public/Books/Show', [
             'book' => $book,
