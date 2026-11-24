@@ -109,7 +109,7 @@ export default function Welcome({
 
     return (
         <>
-            <Head title="CHIMULIA PRESS | Penerbit Buku Akademik" />
+            <Head title="Center For Cultural Impact in Mathematics Learning" />
 
             <div className="min-h-screen overflow-x-hidden bg-white font-sans text-slate-800">
                 {/* NAVBAR */}
