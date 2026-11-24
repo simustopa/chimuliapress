@@ -1070,8 +1070,6 @@ export default function Welcome({
                                         {/* Judul */}
                                         <h2 className="text-3xl font-semibold leading-tight text-[#0b3a70] sm:text-4xl">
                                             Katalog Buku
-                                            <br />
-                                            CHIMULIA PRESS
                                         </h2>
 
                                         {/* Deskripsi */}
