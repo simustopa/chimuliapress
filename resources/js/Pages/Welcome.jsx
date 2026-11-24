@@ -403,7 +403,7 @@ export default function Welcome({
                                                 {activeService.title}
                                             </h3>
                                             <p className="mt-1 text-[10px] text-blue-100">
-                                                CHIMULIA PRESS - Layanan Profesional
+                                                Layanan Profesional
                                             </p>
                                         </div>
                                     </div>
@@ -891,7 +891,7 @@ export default function Welcome({
                                 <div className="grid gap-6 lg:grid-cols-[.75fr_1.6fr] lg:items-center">
                                     <div>
                                         <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-[#073875]"><span className="h-0.5 w-7 bg-amber-400" /> Koleksi Terbitan</p>
-                                        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[#082f5c] sm:text-4xl">Katalog Buku CHIMULIA PRESS</h2>
+                                        <h2 className="mt-3 text-3xl font-extrabold leading-tight text-[#082f5c] sm:text-4xl">Katalog Buku</h2>
                                         <p className="mt-3 text-sm leading-6 text-slate-600">Jelajahi koleksi buku terbaru kami, dari referensi ilmiah hingga buku pendidikan.</p>
                                         <Link href="/katalog-buku" className="mt-5 inline-flex rounded-full bg-[#073875] px-5 py-3 text-xs font-bold text-white transition hover:bg-blue-900">
                                             Lihat Semua Buku <span className="ml-2">→</span>
@@ -1241,7 +1241,7 @@ export default function Welcome({
                         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-5 text-[11px] text-blue-100 sm:flex-row sm:items-center sm:justify-between sm:px-8">
 
                             <span>
-                                © {new Date().getFullYear()} CHIMULIA PRESS. All rights reserved.
+                                © {new Date().getFullYear()} PT. Center for Cultural Impact in Mathematics Learning. All rights reserved.
                             </span>
 
                             <div className="flex flex-wrap gap-4">
