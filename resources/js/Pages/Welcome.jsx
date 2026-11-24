@@ -115,12 +115,25 @@ export default function Welcome({
                 {/* NAVBAR */}
                 <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#062d59]/95 text-white shadow-lg shadow-blue-950/10 backdrop-blur-md">
                     <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-2.5 sm:px-8">
-                        <Link href="/" className="flex shrink-0 items-center" aria-label="CHIMULIA PRESS beranda">
+                        <Link
+                            href="/"
+                            className="flex shrink-0 items-center gap-3"
+                            aria-label="CHIMULIA PRESS beranda"
+                        >
                             <img
                                 src="/images/chimulia-white.png"
                                 alt="Logo CHIMULIA PRESS"
                                 className="h-12 w-auto object-contain sm:h-14"
                             />
+
+                            <div className="hidden border-l border-white/30 pl-3 sm:block">
+                                <h3 className="max-w-[230px] text-sm font-bold leading-snug tracking-tight lg:max-w-[280px] lg:text-base">
+                                    Center for Cultural Impact in
+                                    <span className="block text-amber-300">
+                                        Mathematics Learning
+                                    </span>
+                                </h3>
+                            </div>
                         </Link>
 
                         <button
